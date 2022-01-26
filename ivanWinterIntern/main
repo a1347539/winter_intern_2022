@@ -1,0 +1,41 @@
+public ImageView toClientGallery;
+File clientInfoFile;
+
+// in onCreate()------------------------------------------------
+loadClientInfoFile();
+toClientGallery = (ImageView) findViewById(R.id.to_client_gallery);
+toClientGallery.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        Intent toPhotoEditingAct = new Intent(context, ClientSelectorActivity.class);
+        toPhotoEditingAct.putExtra("jsonPath", clientInfoFile.getAbsolutePath());
+        context.startActivity(toPhotoEditingAct);
+    }
+});
+
+
+private void loadClientInfoFile() {
+String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/DCIM/ThermalMore/ClientINFO/";
+File root = new File(rootPath);
+if (!root.exists()) { root.mkdir(); }
+GlobalVariable.clientInfoFilePath = rootPath + "Clients.txt";
+clientInfoFile = new File(GlobalVariable.clientInfoFilePath);
+if (!clientInfoFile.exists()) {
+    try {
+        clientInfoFile.createNewFile();
+        Map<String, Object> temp = new HashMap<>();
+        temp.put("name", "0000");
+        temp.put("phone", "0000");
+        temp.put("address", "");
+        ArrayList<String> temp2 = new ArrayList<>();
+        temp2.add("0000");
+        temp.put("images", temp2);
+        Map<String, Map<String, Object>> map = new HashMap<>();
+        map.put("0000", temp);
+        Clients data = new Clients(clientInfoFile, map);
+        data.saveToFile();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+}
